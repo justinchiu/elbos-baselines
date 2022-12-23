@@ -68,7 +68,7 @@ We show that the gradient of the marginal likelihood (equation \ref{eqn:ml-grad}
 a built-in baseline, and use that to derive a simple and computable lower bound of the marginal likelihood
 (equation \ref{eqn:ml}) whose gradient does not require the manual engineering of a baseline.
 
-\section{The built-in baseline of logsumexp}
+\section{The gradient of logsumexp gives the scaled regret}
 The key component of the marginal likelihood is the logsumexp operation,
 a smooth version of max: $\log \sum_z \exp f(z)$.
 As we saw in the gradient of the marginal likelihood, the gradient of logsumexp is given by
@@ -79,8 +79,10 @@ $$
 \approx e^{f(z) - \max_{z' \in Z} f(z')} \nabla f(z).
 $$
 The last approximation holds because logsumexp is a smooth approximation of max.
-The quantity $R$ on the left hand side is the regret of a particular $z$ compared to
-the largest $f(z)$ for $z \in Z$,
-and is bounded between 0 and 1.
+We can therefore think of $R$ as a built-in baseline.
+$R$ is also known as the regret, e.g. difference between a given $f(z)$
+and the best $f(z)$.
+The gradient has another nice property: it is always scaled between 0 and 1.
+
 
 \end{document}
