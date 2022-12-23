@@ -71,7 +71,8 @@ a built-in baseline, and use that to derive a simple and computable lower bound 
 \section{The gradient of logsumexp gives the scaled regret}
 The key component of the marginal likelihood is the logsumexp operation,
 a smooth version of max: $\log \sum_z \exp f(z)$.
-As we saw in the gradient of the marginal likelihood, the gradient of logsumexp is given by
+Similar to the gradient of the marginal likelihood,
+the gradient of logsumexp is given by
 $$
 \nabla \log \sum_{z'\in Z} \exp f(z')
 = \frac{e^{f(z)}}{\sum_{z' \in Z} e^{f(z')}} \nabla f(z)
