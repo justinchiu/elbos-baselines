@@ -1,0 +1,84 @@
+
+\documentclass[12pt]{article}
+\usepackage[margin=0.7in]{geometry}
+
+\usepackage{amsmath}
+
+\title{Evidence lower bounds with built-in baselines}
+\author{Justin}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Problem setup}
+The goal is to maximize the log marginal likelihood,
+\begin{equation}
+\label{eqn:ml}
+\log p(x) = \log \sum_z p(x,z),
+\end{equation}
+for a latent variable model.
+The derivative of equation \ref{eqn:ml} is 
+\begin{equation}
+\label{eqn:ml-grad}
+\nabla \log \sum_z p(x,z)
+= \frac{p(x,z)}{p(x)}\nabla \log p(x,z) = 
+p(z\mid x)\nabla \log p(x,z),
+\end{equation}
+the expected gradient under the posterior.
+When exact marginalization and exact computation of the posterior is intractable,\footnote{
+Marginalization and computation of the posterior take the same amount of computation.
+}
+a common approach is to introduce a variational approximation the the posterior $q(z\mid x)$
+and optimize the following lower bound
+\begin{equation}
+\label{eqn:elbo}
+\log p(x)
+= \log \sum_z q(z\mid x) \frac{p(x,z)}{q(z\mid x)}
+\ge \sum_z q(z\mid x) \log \frac{p(x,z)}{q(z\mid x)}.\footnote{
+The gap between the two is given by $KL[q(z\mid x) || p(z \mid x)]$.
+}
+\end{equation}
+
+Empirically, we find that directly optimizing equation \ref{eqn:elbo} to be more difficult than
+optimizing the marginal likelihood (equation \ref{eqn:ml}), often requiring a baseline:
+\begin{equation}
+\label{eqn:baseline}
+\begin{aligned}
+&\nabla_q \sum_z q(z\mid x) \log \frac{p(x,z)}{q(z\mid x)}\\
+&= \nabla_q \sum_z q(z\mid x) \log p(x\mid z) - KL[q(z\mid x) || p(z)]\\
+&= \nabla_q \sum_z q(z\mid x) (\log p(x\mid z) - B) - KL[q(z\mid x) || p(z)],
+\end{aligned}
+\end{equation}
+where the baseline $B$ is not a function of $z$.\footnote{
+The derivative is a linear operator, and
+$\nabla\sum_z q(z\mid x)B = B \nabla \sum_z q(z\mid x) = B \cdot 0$.
+}
+Computing this baseline $B$ can be relatively expensive,
+requiring multiple evaluations of $p(x\mid z)$.
+A common choice of baseline is the sample-average baseline, where
+$B = \sum_{z' \in Z} \log p(x\mid z')$
+and $Z$ is a set of iid samples.\footnote{
+A more efficient alternative is the leave-one-out baseline,
+which is efficient if the results of $p(x\mid z)$ are already available
+for a set of iid $z$.
+}
+
+We show that the gradient of the marginal likelihood (equation \ref{eqn:ml-grad}) already contains
+a built-in baseline, and use that to derive a simple and computable lower bound of the marginal likelihood
+(equation \ref{eqn:ml}) whose gradient does not require the manual engineering of a baseline.
+
+\section{The built-in baseline of logsumexp}
+The key component of the marginal likelihood is the logsumexp operation,
+a smooth version of max: $\log \sum_z \exp f(z)$.
+As we saw in the gradient of the marginal likelihood, the gradient of logsumexp is given by
+$$
+\nabla \log \sum_{z'\in Z} \exp f(z')
+= \frac{e^{f(z)}}{\sum_{z' \in Z} e^{f(z')}} \nabla f(z)
+= \underbrace{e^{f(z) - \log \sum_{z' \in Z} e^{f(z')}}}_{R} \nabla f(z)
+\approx e^{f(z) - \max_{z' \in Z} f(z')} \nabla f(z).
+$$
+The last approximation holds because logsumexp is a smooth approximation of max.
+The reward $R$ on the left hand side is bounded between 0 and 1.
+
+\end{document}
