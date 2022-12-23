@@ -80,7 +80,7 @@ $$
 \approx \underbrace{e^{f(z) - \max_{z' \in Z} f(z')}}_{R} \nabla f(z).
 $$
 The last approximation holds because logsumexp is a smooth approximation of max.
-We can therefore think of $R$ as a built-in baseline.
+We can therefore think of $\log sum_{z'\in Z}\exp f(z')$ as a built-in baseline.
 $R$ is also the exponentiated regret, e.g. difference between a given $f(z)$
 and the best $f(z)$.
 The gradient has another nice property: it is always scaled between 0 and 1.
