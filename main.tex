@@ -79,6 +79,8 @@ $$
 \approx e^{f(z) - \max_{z' \in Z} f(z')} \nabla f(z).
 $$
 The last approximation holds because logsumexp is a smooth approximation of max.
-The reward $R$ on the left hand side is bounded between 0 and 1.
+The quantity $R$ on the left hand side is the regret of a particular $z$ compared to
+the largest $f(z)$ for $z \in Z$,
+and is bounded between 0 and 1.
 
 \end{document}
