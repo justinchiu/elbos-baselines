@@ -63,6 +63,10 @@ A more efficient alternative is the leave-one-out baseline,
 which is efficient if the results of $p(x\mid z)$ are already available
 for a set of iid $z$.
 }
+Additionally, even in scenarios where exact marginalization is tractable,
+prior work has included a baseline. This begs the questions:
+Is a baseline necessary, and why does optimizing the marginal likelihood
+not require a baseline?
 
 We show that the gradient of the marginal likelihood (\ref{eqn:ml-grad}) already contains
 a built-in baseline, and use that to derive a simple and computable lower bound
