@@ -18,7 +18,7 @@ The goal is to maximize the log marginal likelihood,
 \log p(x) = \log \sum_z p(x,z),
 \end{equation}
 for a latent variable model.
-The derivative of equation \ref{eqn:ml} is 
+The derivative of the above is 
 \begin{equation}
 \label{eqn:ml-grad}
 \nabla \log \sum_z p(x,z)
@@ -26,22 +26,22 @@ The derivative of equation \ref{eqn:ml} is
 p(z\mid x)\nabla \log p(x,z),
 \end{equation}
 the expected gradient under the posterior.
-When exact marginalization and exact computation of the posterior is intractable,\footnote{
-Marginalization and computation of the posterior take the same amount of computation.
-}
-a common approach is to introduce a variational approximation the the posterior $q(z\mid x)$
-and optimize the following lower bound
+When exact marginalization is intractable,
+a common approach is to introduce a variational approximation to the posterior $q(z\mid x)$
+and optimize the lower bound
 \begin{equation}
 \label{eqn:elbo}
 \log p(x)
 = \log \sum_z q(z\mid x) \frac{p(x,z)}{q(z\mid x)}
-\ge \sum_z q(z\mid x) \log \frac{p(x,z)}{q(z\mid x)}.\footnote{
+\ge \sum_z q(z\mid x) \log \frac{p(x,z)}{q(z\mid x)},
+\end{equation}
+which allows for tractable Monte Carlo approximation.
+\footnote{
 The gap between the two is given by $KL[q(z\mid x) || p(z \mid x)]$.
 }
-\end{equation}
 
-Empirically, we find that directly optimizing equation \ref{eqn:elbo} to be more difficult than
-optimizing the marginal likelihood (equation \ref{eqn:ml}), often requiring a baseline:
+Empirically, we find directly optimizing this lower bound (\ref{eqn:elbo}) to be more difficult than
+optimizing the marginal likelihood (\ref{eqn:ml}), often requiring a baseline:
 \begin{equation}
 \label{eqn:baseline}
 \begin{aligned}
@@ -54,8 +54,8 @@ where the baseline $B$ is not a function of $z$.\footnote{
 The derivative is a linear operator, and
 $\nabla\sum_z q(z\mid x)B = B \nabla \sum_z q(z\mid x) = B \cdot 0$.
 }
-Computing this baseline $B$ can be relatively expensive,
-requiring multiple evaluations of $p(x\mid z)$.
+Computing this baseline $B$ can be expensive,
+potentially requiring multiple evaluations of $p(x\mid z)$.
 A common choice of baseline is the sample-average baseline, where
 $B = \sum_{z' \in Z} \log p(x\mid z')$
 and $Z$ is a set of iid samples.\footnote{
@@ -64,11 +64,12 @@ which is efficient if the results of $p(x\mid z)$ are already available
 for a set of iid $z$.
 }
 
-We show that the gradient of the marginal likelihood (equation \ref{eqn:ml-grad}) already contains
-a built-in baseline, and use that to derive a simple and computable lower bound of the marginal likelihood
-(equation \ref{eqn:ml}) whose gradient does not require the manual engineering of a baseline.
+We show that the gradient of the marginal likelihood (\ref{eqn:ml-grad}) already contains
+a built-in baseline, and use that to derive a simple and computable lower bound
+of the marginal likelihood
+(\ref{eqn:ml}) whose gradient does not require the manual engineering of a baseline.
 
-\section{The gradient of logsumexp gives the scaled regret}
+\section{The gradient of logsumexp approximates the expoentiated regret}
 The key component of the marginal likelihood is the logsumexp operation,
 a smooth version of max: $\log \sum_z \exp f(z)$.
 Similar to the gradient of the marginal likelihood,
