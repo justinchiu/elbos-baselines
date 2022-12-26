@@ -52,7 +52,7 @@ optimizing the marginal likelihood (\ref{eqn:ml}), often requiring a baseline:
 \end{equation}
 where the baseline $B$ is not a function of $z$.\footnote{
 The derivative is a linear operator, and
-$\nabla\sum_z q(z\mid x)B = B \nabla \sum_z q(z\mid x) = B \cdot 0$.
+$\nabla\sum_z q(z\mid x)B = B\cdot\nabla \sum_z q(z\mid x) = B \cdot 0$.
 }
 Computing this baseline $B$ can be expensive,
 potentially requiring multiple evaluations of $p(x\mid z)$.
