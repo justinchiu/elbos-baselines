@@ -73,7 +73,8 @@ a built-in baseline, and use that to derive a simple and computable lower bound
 of the marginal likelihood
 (\ref{eqn:ml}) whose gradient does not require the manual engineering of a baseline.
 
-\section{The gradient of logsumexp approximates the expoentiated regret}
+\section{Logsumexp}
+\subsection{The gradient of logsumexp approximates the exponentiated regret}
 The key component of the marginal likelihood is the logsumexp operation,
 a smooth version of max: $\log \sum_z \exp f(z)$.\footnote{
 $\log\sum\exp(f(z))$ is perhaps better known as the log-partition function.
@@ -93,7 +94,16 @@ $R$ is also the exponentiated regret, the difference between a given $f(z)$
 and the best $f(z)$.
 Since the regret is non-positive, the exponentiated regret is always between 0 and 1.
 
-\section{Variance analysis}
+\subsection{Approximating the gradient of logsumexp}
+Rather than introducing a surrogate loss, such as equation (\ref{eqn:elbo}),
+and losing this built-in baseline,
+    we can instead approximate the gradient of logsumexp by using a restriction of logsumexp to
+    $\mathcal{Z}'\subseteq\mathcal{Z}$:
+\begin{equation}
+\log\sum_{z \in \mathcal{Z}'}\exp f(z).
+\end{equation}
+
+\subsection{Gradient estimator analysis}
 TBD
 
 
