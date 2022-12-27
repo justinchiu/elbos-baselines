@@ -75,6 +75,9 @@ of the marginal likelihood
 
 \section{Logsumexp}
 \subsection{The gradient of logsumexp approximates the exponentiated regret}
+We start by reviewing the properties of the gradient of the logsumexp function,
+before proposing an efficient estimator for variational learning.
+
 The key component of the marginal likelihood is the logsumexp operation,
 a smooth version of max: $\log \sum_z \exp f(z)$.\footnote{
 $\log\sum\exp(f(z))$ is perhaps better known as the log-partition function.
@@ -94,17 +97,64 @@ $R$ is also the exponentiated regret, the difference between a given $f(z)$
 and the best $f(z)$.
 Since the regret is non-positive, the exponentiated regret is always between 0 and 1.
 
-\subsection{Approximating the gradient of logsumexp}
-Rather than introducing a surrogate loss, such as equation (\ref{eqn:elbo}),
-and losing this built-in baseline,
-    we can instead approximate the gradient of logsumexp by using a restriction of logsumexp to
+\subsection{Approximating the gradient of the marginal likelihood}
+Given these properties of the gradient of logsumexp, we return to variational learning.
+
+In the marginal likelihood setting (equation \ref{eqn:ml}) $f(z) = \log p(x,z)$,
+and the regret compares a given $\log p(x,z)$ to the best $\log p(x,z^*)$.
+In the variational setting (equation (\ref{eqn:elbo})),
+the gradient of the ELBO does not have a built-in baseline or a regret interpretation.
+
+We propose to approximate the gradient of logsumexp by using a restriction of logsumexp to
     $\mathcal{Z}'\subseteq\mathcal{Z}$:
 \begin{equation}
-\log\sum_{z \in \mathcal{Z}'}\exp f(z).
+\log\sum_{z \in \mathcal{Z}'}\exp \log p(x,z).
 \end{equation}
+We learn a proposal distribution $q(z\mid x)$ in order to choose $\mathcal{Z}'$.
+
+We instead optimize $q$ to approximate $p(z\mid x)$ by optimizing
+\begin{equation}
+\log\sum_z\exp \log p(x,z) - KL[p(z\mid x) || q(z \mid x)]
+\approx 
+\underbrace{\log\sum_{z\in\mathcal{Z}'}\exp \log \tilde{p}(x,z)}_{\text{ML}}
+-
+\underbrace{
+\sum_{z\in\mathcal{Z}'}\tilde{p}(z\mid x) \log \frac{\tilde{p}(z\mid x)}{\tilde{q}(z \mid x)}
+}_{\text{KL}},
+\end{equation}
+where $\tilde{p}(z\mid x) = \frac{p(x,z)}{\sum_{z' \in \mathcal{Z}'}p(x,z')}$,
+where the normalizing constant is approximated.\footnote{
+    This should lead to a derivation of contrastive divergence and contrastive wake sleep.
+    This is probably just an autodiff trick for doing contrastive wake sleep.
+}
+
+We optimize this in two stages:
+\begin{enumerate}
+\item Maximize ML with respect to $p$ using $\mathcal{Z}' = \text{topk} q(z\mid x)$
+\item Maximize KL with respect to $q$ using $\mathcal{Z}' = \text{topk} p(z)$
+\end{enumerate}
+
+Is this roughly a hacky contrastive wake-sleep implementation?
 
 \subsection{Gradient estimator analysis}
 TBD
 
+\section{Related work}
+Contrastive divergence uses MCMC to estimate the gradient of the log partition function.
+This is identical to differentiating through a Monte Carlo approximation of the
+log partition function, commonly known as a sampled softmax / contrastive learning.
+
+Wake-sleep and reweighted wake-sleep optimize the evidence plus the forward KL (M-projection),
+which is our objective.
+However, the reconstruction term in the wake-sleep objectiveis identical the one used in
+VAEs, which suffers from poor conditioning.
+This conditioning is improved by leaving the logsumexp operator intact,
+rather lower-bounded using Jensen's inequality.
+
+DiCE is an infinitely differentiable Monte Carlo gradient estimator.
+It is a surrogate objective that is written to ensure correct higher order derivatives.
+Our surrogate objective is also designed to ensure that the gradient holds certain properties,
+but we focus on controlling the conditioning of the gradient rather than on the correctness
+of higher order derivatives.
 
 \end{document}
