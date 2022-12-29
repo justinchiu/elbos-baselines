@@ -62,6 +62,8 @@ and $Z$ is a set of iid samples.\footnote{
 A more efficient alternative is the leave-one-out baseline,
 which is efficient if the results of $p(x\mid z)$ are already available
 for a set of iid $z$.
+This can be interpreted as the advantage over a chosen $z$ over the average
+of the alternatives.
 }
 Additionally, even in scenarios where exact marginalization is tractable,
 prior work has included a baseline. This begs the questions:
@@ -127,14 +129,6 @@ where the normalizing constant is approximated.\footnote{
     This should lead to a derivation of contrastive divergence and contrastive wake sleep.
     This is probably just an autodiff trick for doing contrastive wake sleep.
 }
-
-We optimize this in two stages:
-\begin{enumerate}
-\item Maximize ML with respect to $p$ using $\mathcal{Z}' = \text{topk} q(z\mid x)$
-\item Maximize KL with respect to $q$ using $\mathcal{Z}' = \text{topk} p(z)$
-\end{enumerate}
-
-Is this roughly a hacky contrastive wake-sleep implementation?
 
 \subsection{Gradient estimator analysis}
 TBD
